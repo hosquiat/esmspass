@@ -470,7 +470,7 @@ Create:
        - App code (or built artifacts) from `app`.
        - Nginx config.
      - Ports:
-       - `8080:80` (host:container).
+       - `8000:80` (host:container).
      - Depends on `app`.
 
    - `db` (Postgres):
@@ -490,7 +490,7 @@ Use named volume `db_data`.
 Provide an example `.env` (or `.env.docker`) tailored to Docker with:
 
 - `APP_NAME=TeamVault` (or similar)
-- `APP_URL=http://localhost:8080`
+- `APP_URL=http://localhost:8000`
 - `DB_CONNECTION=pgsql`
 - `DB_HOST=db`
 - `DB_PORT=5432`
@@ -500,7 +500,7 @@ Provide an example `.env` (or `.env.docker`) tailored to Docker with:
 - Google auth keys:
   - `GOOGLE_CLIENT_ID=...`
   - `GOOGLE_CLIENT_SECRET=...`
-  - `GOOGLE_REDIRECT_URI=http://localhost:8080/auth/google/callback`
+  - `GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback`
 - Any additional Sanctum / session config needed.
 
 Explain commands for:
@@ -539,7 +539,7 @@ Add a “Deployment with Docker” section that explains:
   2. Set DB and Google OAuth values.
   3. `docker-compose up -d --build`.
   4. `docker-compose exec app php artisan migrate --seed`.
-  5. Visit `http://localhost:8080`.
+  5. Visit `http://localhost:8000`.
 
 - How DB persistence works via `db_data` volume.
 - How to back up the DB:

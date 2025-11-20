@@ -22,7 +22,7 @@ TeamVault is a secure internal web application for storing and managing company 
 2. **Configure Google OAuth**
    - Go to [Google Cloud Console](https://console.cloud.google.com/)
    - Create OAuth 2.0 credentials
-   - Set authorized redirect URI: `http://localhost:8080/auth/google/callback`
+   - Set authorized redirect URI: `http://localhost:8000/auth/google/callback`
    - Add credentials to `.env`:
      ```
      GOOGLE_CLIENT_ID=your_client_id
@@ -42,7 +42,7 @@ TeamVault is a secure internal web application for storing and managing company 
    ```
 
 5. **Access Application**
-   - Visit: http://localhost:8080
+   - Visit: http://localhost:8000
    - Sign in with Google using an email from `ADMIN_EMAILS`
 
 ## Features
@@ -118,7 +118,7 @@ PATCH  /api/records/{id}/restore Restore archived record
 ### Example Request
 
 ```bash
-curl -X GET "http://localhost:8080/api/records?type=password&search=office&archived=0" \
+curl -X GET "http://localhost:8000/api/records?type=password&search=office&archived=0" \
   -H "Accept: application/json" \
   -H "X-CSRF-TOKEN: your_csrf_token" \
   --cookie "your_session_cookie"

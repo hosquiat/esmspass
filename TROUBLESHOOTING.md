@@ -37,7 +37,7 @@ docker-compose exec app php artisan optimize:clear
 **Check:**
 - `.env` file has `SESSION_DRIVER=database`
 - Session table exists (run migrations)
-- Clear browser cookies for localhost:8080
+- Clear browser cookies for localhost:8000
 
 **Solution:**
 ```bash
@@ -104,14 +104,14 @@ docker-compose logs -f app
 ### 3. Test API Directly
 ```bash
 # Get CSRF token from login page, then:
-curl -X GET "http://localhost:8080/api/records" \
+curl -X GET "http://localhost:8000/api/records" \
   -H "Accept: application/json" \
   -H "Cookie: your_session_cookie" \
   -H "X-CSRF-TOKEN: your_csrf_token"
 ```
 
 ### 4. Check Authentication
-Visit `http://localhost:8080/api/user` after logging in - should return your user JSON.
+Visit `http://localhost:8000/api/user` after logging in - should return your user JSON.
 
 ### 5. Verify Google OAuth
 - Check `.env` has correct `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`

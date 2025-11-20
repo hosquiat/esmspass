@@ -27,22 +27,23 @@ class GoogleAuthController extends Controller
             // Get user info from Google
             $googleUser = Socialite::driver('google')->user();
 
+            // Check if email is in admin list
+            $adminEmails = explode(',', env('ADMIN_EMAILS', ''));
+            $adminEmails = array_map('trim', $adminEmails);
+            $isAdmin = in_array($googleUser->getEmail(), $adminEmails);
+
             // Check if user already exists
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // Update existing user's Google info
+                // Update existing user's Google info and role
                 $user->update([
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
                     'name' => $googleUser->getName(),
+                    'role' => $isAdmin ? 'admin' : 'user',
                 ]);
             } else {
-                // Check if email is in admin list
-                $adminEmails = explode(',', env('ADMIN_EMAILS', ''));
-                $adminEmails = array_map('trim', $adminEmails);
-                $isAdmin = in_array($googleUser->getEmail(), $adminEmails);
-
                 // Create new user
                 $user = User::create([
                     'name' => $googleUser->getName(),

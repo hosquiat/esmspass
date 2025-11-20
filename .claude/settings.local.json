@@ -15,7 +15,11 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(gh:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(docker compose:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

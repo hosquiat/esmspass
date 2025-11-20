@@ -17,7 +17,7 @@ This document explains how to run the ESMSPass application using Docker.
 4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
 5. Configure OAuth consent screen
 6. Create OAuth client ID (Web application type)
-7. Add authorized redirect URI: `http://localhost:8080/auth/google/callback`
+7. Add authorized redirect URI: `http://localhost:8000/auth/google/callback`
 8. Copy the Client ID and Client Secret
 
 ### 2. Configure Environment
@@ -56,7 +56,7 @@ docker-compose exec app php artisan migrate --seed
 
 ### 5. Access the Application
 
-Open your browser and navigate to: **http://localhost:8080**
+Open your browser and navigate to: **http://localhost:8000**
 
 Click "Sign in with Google" and authenticate with the email address you set in `ADMIN_EMAILS`.
 

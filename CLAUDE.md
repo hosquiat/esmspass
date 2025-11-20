@@ -88,7 +88,7 @@ DB_PORT=5432
 
 Google OAuth redirect URI must match the exposed port:
 ```
-GOOGLE_REDIRECT_URI=http://localhost:8080/auth/google/callback
+GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
 ```
 
 ## Development Commands
