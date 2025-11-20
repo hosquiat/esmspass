@@ -42,7 +42,7 @@ A secure, team-based password management system built with Laravel 11 and Vue 3,
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/hosquiat/esmspass.git
+git clone https://github.com/sogeniusio/esmspass.git
 cd esmspass
 ```
 
@@ -133,7 +133,7 @@ UPDATE users SET is_admin = true WHERE email = 'your-email@example.com';
 Pull the pre-built image from Docker Hub:
 
 ```bash
-docker pull hosquiat/esmspass:latest
+docker pull sogeniusio/esmspass:latest
 ```
 
 Then update your `docker-compose.yml` to use the image instead of building:
@@ -141,7 +141,7 @@ Then update your `docker-compose.yml` to use the image instead of building:
 ```yaml
 services:
   app:
-    image: hosquiat/esmspass:latest
+    image: sogeniusio/esmspass:latest
     # Remove the 'build' section
 ```
 
@@ -382,7 +382,7 @@ sudo certbot --nginx -d your-domain.com
 
 4. **Deploy application**
 ```bash
-git clone https://github.com/hosquiat/esmspass.git
+git clone https://github.com/sogeniusio/esmspass.git
 cd esmspass
 cp .env.example .env
 # Edit .env with production values

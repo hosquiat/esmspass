@@ -24,7 +24,7 @@ services:
 
   # Laravel Application (all-in-one: PHP-FPM + Nginx)
   app:
-    image: hosquiat/esmspass:latest
+    image: sogeniusio/esmspass:latest
     build:
       context: .
       dockerfile: Dockerfile
