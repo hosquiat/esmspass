@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: esmspass_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-esmspass}
+      POSTGRES_USER: ${DB_USERNAME:-esmspass_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme_secure_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - esmspass_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-esmspass_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Laravel Application (all-in-one: PHP-FPM + Nginx)
+  app:
+    image: hosquiat/esmspass:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: esmspass_app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"
+    environment:
+      - APP_NAME=${APP_NAME:-ESMSPASS}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_URL:-http://localhost:8000}
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-esmspass}
+      - DB_USERNAME=${DB_USERNAME:-esmspass_user}
+      - DB_PASSWORD=${DB_PASSWORD:-changeme_secure_password}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8000/auth/google/callback}
+      - SESSION_DRIVER=database
+      - SESSION_LIFETIME=120
+      - CACHE_DRIVER=file
+      - QUEUE_CONNECTION=sync
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - esmspass_network
+    volumes:
+      - app_storage:/var/www/html/storage
+
+networks:
+  esmspass_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  app_storage:
+    driver: local

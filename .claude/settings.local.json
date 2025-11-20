@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(composer require:*)",
+      "Bash(php artisan vendor:publish:*)",
+      "Bash(php artisan:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:elitestartms.com)",
+      "Bash(curl -s https://elitestartms.com/)",
+      "Bash(docker build:*)",
+      "Bash(docker login:*)",
+      "Bash(docker push:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
