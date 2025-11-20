@@ -1,6 +1,6 @@
-# ESMSPass - Docker Deployment Guide
+# TeamVault - Docker Deployment Guide
 
-This document explains how to run the ESMSPass application using Docker.
+This document explains how to run the TeamVault application using Docker.
 
 ## Prerequisites
 
@@ -119,13 +119,13 @@ npm run dev
 
 ```bash
 # Access PostgreSQL CLI
-docker-compose exec db psql -U ESMSPass_user -d ESMSPass
+docker-compose exec db psql -U TeamVault_user -d TeamVault
 
 # Backup database
-docker-compose exec db pg_dump -U ESMSPass_user ESMSPass > backup_$(date +%Y%m%d).sql
+docker-compose exec db pg_dump -U TeamVault_user TeamVault > backup_$(date +%Y%m%d).sql
 
 # Restore database
-docker-compose exec -T db psql -U ESMSPass_user ESMSPass < backup_20240101.sql
+docker-compose exec -T db psql -U TeamVault_user TeamVault < backup_20240101.sql
 ```
 
 ## Production Deployment

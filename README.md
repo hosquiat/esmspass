@@ -1,4 +1,4 @@
-# ESMSPASS - Team Password Manager
+# TeamVault - Team Password Manager
 
 A secure, team-based password management system built with Laravel 11 and Vue 3, featuring Google OAuth authentication, encrypted storage, and comprehensive change tracking.
 
@@ -42,8 +42,8 @@ A secure, team-based password management system built with Laravel 11 and Vue 3,
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/sogeniusio/esmspass.git
-cd esmspass
+git clone https://github.com/sogeniusio/teamvault.git
+cd teamvault
 ```
 
 ### 2. Configure Environment
@@ -57,7 +57,7 @@ cp .env.example .env
 **Required environment variables:**
 
 ```env
-APP_NAME=ESMSPASS
+APP_NAME=teamvault
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=http://your-domain.com
@@ -67,8 +67,8 @@ APP_KEY=base64:your_generated_app_key_here
 DB_CONNECTION=pgsql
 DB_HOST=db
 DB_PORT=5432
-DB_DATABASE=esmspass
-DB_USERNAME=esmspass_user
+DB_DATABASE=teamvault
+DB_USERNAME=teamvault_user
 DB_PASSWORD=your_secure_database_password
 
 # Google OAuth (required)
@@ -119,7 +119,7 @@ After your first login via Google OAuth, you'll need to manually set yourself as
 
 ```bash
 # Access the database container
-docker-compose exec db psql -U esmspass_user -d esmspass
+docker-compose exec db psql -U teamvault_user -d teamvault
 
 # Update your user to admin
 UPDATE users SET is_admin = true WHERE email = 'your-email@example.com';
@@ -133,7 +133,7 @@ UPDATE users SET is_admin = true WHERE email = 'your-email@example.com';
 Pull the pre-built image from Docker Hub:
 
 ```bash
-docker pull sogeniusio/esmspass:latest
+docker pull sogeniusio/teamvault:latest
 ```
 
 Then update your `docker-compose.yml` to use the image instead of building:
@@ -141,7 +141,7 @@ Then update your `docker-compose.yml` to use the image instead of building:
 ```yaml
 services:
   app:
-    image: sogeniusio/esmspass:latest
+    image: sogeniusio/teamvault:latest
     # Remove the 'build' section
 ```
 
@@ -162,7 +162,7 @@ npm install
 Create a PostgreSQL database:
 
 ```bash
-createdb esmspass
+createdb teamvault
 ```
 
 Update your `.env` file with local database credentials:
@@ -171,7 +171,7 @@ Update your `.env` file with local database credentials:
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=esmspass
+DB_DATABASE=teamvault
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
@@ -203,7 +203,7 @@ The application will be available at `http://localhost:8000`
 ## Application Structure
 
 ```
-esmspass/
+teamvault/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
@@ -260,7 +260,7 @@ esmspass/
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
-| `APP_NAME` | Application name | ESMSPASS | No |
+| `APP_NAME` | Application name | teamvault | No |
 | `APP_ENV` | Environment (production/local) | production | Yes |
 | `APP_DEBUG` | Enable debug mode | false | No |
 | `APP_URL` | Application URL | - | Yes |
@@ -268,8 +268,8 @@ esmspass/
 | `DB_CONNECTION` | Database type | pgsql | Yes |
 | `DB_HOST` | Database host | db | Yes |
 | `DB_PORT` | Database port | 5432 | No |
-| `DB_DATABASE` | Database name | esmspass | Yes |
-| `DB_USERNAME` | Database user | esmspass_user | Yes |
+| `DB_DATABASE` | Database name | teamvault | Yes |
+| `DB_USERNAME` | Database user | teamvault_user | Yes |
 | `DB_PASSWORD` | Database password | - | Yes |
 | `GOOGLE_CLIENT_ID` | Google OAuth Client ID | - | Yes |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Secret | - | Yes |
@@ -290,13 +290,13 @@ esmspass/
 ### Backup Database
 
 ```bash
-docker-compose exec db pg_dump -U esmspass_user esmspass > backup_$(date +%Y%m%d).sql
+docker-compose exec db pg_dump -U teamvault_user teamvault > backup_$(date +%Y%m%d).sql
 ```
 
 ### Restore Database
 
 ```bash
-docker-compose exec -T db psql -U esmspass_user esmspass < backup_20241120.sql
+docker-compose exec -T db psql -U teamvault_user teamvault < backup_20241120.sql
 ```
 
 ### Export Records via UI
@@ -382,8 +382,8 @@ sudo certbot --nginx -d your-domain.com
 
 4. **Deploy application**
 ```bash
-git clone https://github.com/sogeniusio/esmspass.git
-cd esmspass
+git clone https://github.com/sogeniusio/teamvault.git
+cd teamvault
 cp .env.example .env
 # Edit .env with production values
 docker-compose up -d

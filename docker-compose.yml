@@ -2,36 +2,36 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:16-alpine
-    container_name: esmspass_db
+    container_name: teamvault_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-esmspass}
-      POSTGRES_USER: ${DB_USERNAME:-esmspass_user}
+      POSTGRES_DB: ${DB_DATABASE:-teamvault}
+      POSTGRES_USER: ${DB_USERNAME:-teamvault_user}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme_secure_password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "${DB_PORT:-5432}:5432"
     networks:
-      - esmspass_network
+      - teamvault_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-esmspass_user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-teamvault_user}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   # Laravel Application (all-in-one: PHP-FPM + Nginx)
   app:
-    image: sogeniusio/esmspass:latest
+    image: sogeniusio/teamvault:latest
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: esmspass_app
+    container_name: teamvault_app
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8000}:80"
     environment:
-      - APP_NAME=${APP_NAME:-ESMSPASS}
+      - APP_NAME=${APP_NAME:-teamvault}
       - APP_ENV=${APP_ENV:-production}
       - APP_DEBUG=${APP_DEBUG:-false}
       - APP_URL=${APP_URL:-http://localhost:8000}
@@ -39,8 +39,8 @@ services:
       - DB_CONNECTION=pgsql
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_DATABASE=${DB_DATABASE:-esmspass}
-      - DB_USERNAME=${DB_USERNAME:-esmspass_user}
+      - DB_DATABASE=${DB_DATABASE:-teamvault}
+      - DB_USERNAME=${DB_USERNAME:-teamvault_user}
       - DB_PASSWORD=${DB_PASSWORD:-changeme_secure_password}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
@@ -53,12 +53,12 @@ services:
       db:
         condition: service_healthy
     networks:
-      - esmspass_network
+      - teamvault_network
     volumes:
       - app_storage:/var/www/html/storage
 
 networks:
-  esmspass_network:
+  teamvault_network:
     driver: bridge
 
 volumes:

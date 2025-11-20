@@ -15,10 +15,10 @@ Enter your Docker Hub credentials when prompted.
 ### 2. Push the Image
 
 ```bash
-docker push hosquiat/esmspass:latest
+docker push hosquiat/teamvault:latest
 ```
 
-The image will be uploaded to Docker Hub and will be publicly accessible at `docker.io/hosquiat/esmspass:latest`
+The image will be uploaded to Docker Hub and will be publicly accessible at `docker.io/hosquiat/teamvault:latest`
 
 ## GitHub Repository Setup
 
@@ -26,12 +26,12 @@ The image will be uploaded to Docker Hub and will be publicly accessible at `doc
 
 Option A: Using GitHub CLI (if installed):
 ```bash
-gh repo create esmspass --private --source=. --remote=origin --push
+gh repo create teamvault --private --source=. --remote=origin --push
 ```
 
 Option B: Manual Setup:
 1. Go to https://github.com/new
-2. Repository name: `esmspass`
+2. Repository name: `teamvault`
 3. Description: `Team Password Manager - Laravel 11 + Vue 3`
 4. Select **Private**
 5. Do NOT initialize with README, .gitignore, or license (we already have these)
@@ -43,7 +43,7 @@ After creating the repository on GitHub:
 
 ```bash
 # Add the remote (replace hosquiat with your GitHub username if different)
-git remote add origin https://github.com/hosquiat/esmspass.git
+git remote add origin https://github.com/hosquiat/teamvault.git
 
 # Push the code
 git push -u origin main
@@ -52,10 +52,10 @@ git push -u origin main
 ## Verification
 
 ### Docker Hub
-Visit https://hub.docker.com/r/hosquiat/esmspass to verify your image is published
+Visit https://hub.docker.com/r/hosquiat/teamvault to verify your image is published
 
 ### GitHub
-Visit https://github.com/hosquiat/esmspass to verify your code is pushed
+Visit https://github.com/hosquiat/teamvault to verify your code is pushed
 
 ## Next Steps
 
@@ -71,7 +71,7 @@ Visit https://github.com/hosquiat/esmspass to verify your code is pushed
 Anyone with access can now deploy using:
 
 ```bash
-docker pull hosquiat/esmspass:latest
+docker pull hosquiat/teamvault:latest
 ```
 
 ## Important Security Notes
@@ -89,7 +89,7 @@ docker pull hosquiat/esmspass:latest
 ✅ **README.md** - Comprehensive deployment guide
 ✅ **Docker configs** - nginx, supervisor, entrypoint script
 ✅ **Git repository** - Initialized with all code committed
-✅ **Docker image** - Built and ready to push (hosquiat/esmspass:latest)
+✅ **Docker image** - Built and ready to push (hosquiat/teamvault:latest)
 
 ---
 

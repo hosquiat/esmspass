@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Docker Push Script for ESMSPASS
+# Docker Push Script for TeamVault
 # This script builds and pushes the Docker image to Docker Hub
 
 set -e  # Exit on error
 
-DOCKER_REPO="sogeniusio/esmspass"
+DOCKER_REPO="sogeniusio/teamvault"
 TAG="latest"
 IMAGE="${DOCKER_REPO}:${TAG}"
 
 echo "========================================="
-echo "  ESMSPASS Docker Build & Push Script"
+echo "  TeamVault Docker Build & Push Script"
 echo "========================================="
 echo ""
 

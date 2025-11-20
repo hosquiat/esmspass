@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Login - {{ config('app.name', 'ESMSPass') }}</title>
+    <title>Login - {{ config('app.name', 'TeamVault') }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -16,7 +16,7 @@
             <div>
                 <img class="w-80 mx-auto" src="{{ URL::to('/') }}/img/esms-logo-dark.svg" alt="">
                 {{-- <h1 class="text-center text-4xl font-bold text-indigo-600">
-                    {{ config('app.name', 'ESMSPass') }}
+                    {{ config('app.name', 'TeamVault') }}
                 </h1> --}}
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
                     Secure Company Information
