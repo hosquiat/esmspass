@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'password.changed' => \App\Http\Middleware\EnsurePasswordIsChanged::class,
+        ]);
+
+        // Apply password change enforcement to web routes
+        $middleware->web(append: [
+            \App\Http\Middleware\EnsurePasswordIsChanged::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\RecordController;
+use App\Http\Controllers\Auth\BasicAuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +18,9 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
+Route::post('/login', [BasicAuthController::class, 'login'])
+    ->name('login.post');
+
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])
     ->name('auth.google.redirect');
 
@@ -25,6 +30,15 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
 Route::post('/logout', [GoogleAuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
+
+// Password change routes (requires auth but not password changed)
+Route::middleware('auth')->group(function () {
+    Route::get('/change-password', [BasicAuthController::class, 'showChangePasswordForm'])
+        ->name('password.change.form');
+
+    Route::post('/change-password', [BasicAuthController::class, 'changePassword'])
+        ->name('password.change');
+});
 
 // Protected routes (require authentication)
 Route::middleware('auth')->group(function () {
@@ -85,6 +99,16 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/records/import', [RecordController::class, 'import'])
                 ->name('api.records.import');
+
+            // User management routes
+            Route::get('/admin/users', [UserController::class, 'index'])
+                ->name('api.admin.users.index');
+
+            Route::patch('/admin/users/{user}/role', [UserController::class, 'updateRole'])
+                ->name('api.admin.users.updateRole');
+
+            Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])
+                ->name('api.admin.users.destroy');
         });
     });
 });

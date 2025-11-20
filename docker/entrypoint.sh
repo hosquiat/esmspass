@@ -10,6 +10,10 @@ sleep 5
 echo "Running database migrations..."
 php artisan migrate --force
 
+# Seed admin user
+echo "Seeding admin user..."
+php artisan db:seed --class=AdminUserSeeder --force
+
 # Clear and cache configuration
 echo "Optimizing application..."
 php artisan config:cache

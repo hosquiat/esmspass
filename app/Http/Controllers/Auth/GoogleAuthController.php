@@ -27,30 +27,29 @@ class GoogleAuthController extends Controller
             // Get user info from Google
             $googleUser = Socialite::driver('google')->user();
 
-            // Check if email is in admin list
-            $adminEmails = explode(',', env('ADMIN_EMAILS', ''));
-            $adminEmails = array_map('trim', $adminEmails);
-            $isAdmin = in_array($googleUser->getEmail(), $adminEmails);
-
-            // Check if user already exists
-            $user = User::where('email', $googleUser->getEmail())->first();
+            // Check if user already exists by email OR google_id
+            $user = User::where('email', $googleUser->getEmail())
+                ->orWhere('google_id', $googleUser->getId())
+                ->first();
 
             if ($user) {
-                // Update existing user's Google info and role
+                // Update existing user's Google info (auto-link accounts)
+                // Preserve the existing role - don't change it
                 $user->update([
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
                     'name' => $googleUser->getName(),
-                    'role' => $isAdmin ? 'admin' : 'user',
+                    'email' => $googleUser->getEmail(), // Update email in case it changed
+                    // Role is NOT updated - preserve existing role
                 ]);
             } else {
-                // Create new user
+                // Create new user with 'user' role by default
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
-                    'role' => $isAdmin ? 'admin' : 'user',
+                    'role' => 'user', // New Google users are regular users by default
                     'email_verified_at' => now(),
                 ]);
             }
@@ -62,7 +61,7 @@ class GoogleAuthController extends Controller
             return redirect()->intended('/records');
 
         } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Failed to authenticate with Google. Please try again.', $e);
+            return redirect('/login')->with('error', 'Failed to authenticate with Google. Please try again.');
         }
     }
 
