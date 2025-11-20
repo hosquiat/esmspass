@@ -74,7 +74,8 @@ RUN mkdir -p \
     /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/views \
     /var/www/html/storage/logs \
-    /var/www/html/bootstrap/cache
+    /var/www/html/bootstrap/cache \
+    /var/log/supervisor
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
