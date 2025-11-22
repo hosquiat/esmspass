@@ -198,6 +198,220 @@
       </div>
     </div>
 
+    <!-- Database Backup Section -->
+    <div class="bg-white shadow sm:rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Database Backups</h3>
+        <div class="mt-2 max-w-xl text-sm text-gray-500">
+          <p>Configure automatic backups to filesystem and optionally to Google Drive.</p>
+        </div>
+
+        <!-- Backup Settings -->
+        <div class="mt-5 space-y-6">
+          <!-- Filesystem Backup -->
+          <div class="border-b border-gray-200 pb-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-medium text-gray-900">Filesystem Backup</h4>
+                <p class="mt-1 text-sm text-gray-500">Automated backups stored in Docker volume</p>
+              </div>
+              <button
+                type="button"
+                @click="toggleFilesystemBackup"
+                :disabled="updatingBackupSettings"
+                :class="[
+                  backupSettings.filesystem_enabled ? 'bg-indigo-600' : 'bg-gray-200',
+                  'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50'
+                ]"
+              >
+                <span
+                  :class="[
+                    backupSettings.filesystem_enabled ? 'translate-x-5' : 'translate-x-0',
+                    'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
+                  ]"
+                ></span>
+              </button>
+            </div>
+
+            <div v-if="backupSettings.filesystem_enabled" class="mt-4">
+              <label class="block text-sm font-medium text-gray-700">Retention Period (days)</label>
+              <input
+                type="number"
+                v-model.number="backupSettings.filesystem_retention_days"
+                @change="updateBackupSettings"
+                :disabled="updatingBackupSettings"
+                min="1"
+                max="365"
+                class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50"
+              />
+              <p class="mt-1 text-xs text-gray-500">Backups older than this will be automatically deleted</p>
+            </div>
+          </div>
+
+          <!-- Google Drive Backup -->
+          <div class="border-b border-gray-200 pb-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-medium text-gray-900">Google Drive Backup</h4>
+                <p class="mt-1 text-sm text-gray-500">Upload backups to Google Drive</p>
+              </div>
+              <button
+                type="button"
+                @click="toggleGoogleDriveBackup"
+                :disabled="updatingBackupSettings || !googleDriveConfigured"
+                :class="[
+                  backupSettings.google_drive_enabled ? 'bg-indigo-600' : 'bg-gray-200',
+                  'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50'
+                ]"
+              >
+                <span
+                  :class="[
+                    backupSettings.google_drive_enabled ? 'translate-x-5' : 'translate-x-0',
+                    'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
+                  ]"
+                ></span>
+              </button>
+            </div>
+
+            <div v-if="!googleDriveConfigured" class="mt-4">
+              <p class="text-sm text-gray-500 mb-3">Configure Google Drive credentials to enable cloud backups.</p>
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Service Account JSON</label>
+                  <textarea
+                    v-model="googleDriveCredentials"
+                    rows="4"
+                    placeholder='{"type": "service_account", "project_id": "..."}'
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono text-xs"
+                  ></textarea>
+                  <p class="mt-1 text-xs text-gray-500">Paste your Google Service Account JSON credentials</p>
+                </div>
+                <button
+                  type="button"
+                  @click="configureGoogleDrive"
+                  :disabled="configuringGoogleDrive || !googleDriveCredentials"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                >
+                  {{ configuringGoogleDrive ? 'Configuring...' : 'Configure Google Drive' }}
+                </button>
+              </div>
+            </div>
+
+            <div v-else class="mt-4">
+              <p class="text-sm text-green-600">✓ Google Drive configured</p>
+              <button
+                type="button"
+                @click="testGoogleDrive"
+                :disabled="testingGoogleDrive"
+                class="mt-2 inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              >
+                {{ testingGoogleDrive ? 'Testing...' : 'Test Connection' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Manual Backup -->
+          <div class="pt-4">
+            <h4 class="text-sm font-medium text-gray-900">Manual Backup</h4>
+            <p class="mt-1 text-sm text-gray-500">Create a backup immediately</p>
+
+            <div class="mt-3 flex items-center gap-4">
+              <button
+                type="button"
+                @click="runManualBackup"
+                :disabled="runningBackup"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              >
+                <svg v-if="!runningBackup" class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                <svg v-else class="animate-spin mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ runningBackup ? 'Creating Backup...' : 'Run Backup Now' }}
+              </button>
+
+              <button
+                type="button"
+                @click="refreshBackupList"
+                :disabled="loadingBackups"
+                class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              >
+                <svg class="mr-2 -ml-1 h-5 w-5" :class="{ 'animate-spin': loadingBackups }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh List
+              </button>
+            </div>
+
+            <div v-if="backupResult" class="mt-3 rounded-md p-4" :class="backupResult.success ? 'bg-green-50' : 'bg-red-50'">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg v-if="backupResult.success" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <svg v-else class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium" :class="backupResult.success ? 'text-green-800' : 'text-red-800'">
+                    {{ backupResult.message }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Backup List -->
+          <div v-if="backups.length > 0" class="pt-6">
+            <h4 class="text-sm font-medium text-gray-900">Available Backups</h4>
+            <div class="mt-3 overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+              <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Filename</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Size</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Created</th>
+                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                      <span class="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr v-for="backup in backups" :key="backup.filename">
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      {{ backup.filename }}
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {{ backup.size_human }}
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {{ formatBackupDate(backup.created_at) }}
+                    </td>
+                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                      <button
+                        @click="downloadBackup(backup.filename)"
+                        class="text-indigo-600 hover:text-indigo-900 mr-4"
+                      >
+                        Download
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Last Backup Info -->
+          <div v-if="backupSettings.last_backup_at" class="pt-4 text-sm text-gray-500">
+            Last backup: {{ formatBackupDate(backupSettings.last_backup_at) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div v-if="showDeleteModal" class="fixed z-50 inset-0 overflow-y-auto" @click.self="showDeleteModal = false">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -264,6 +478,25 @@ const deletingUser = ref(null);
 const showDeleteModal = ref(false);
 const userToDelete = ref(null);
 const currentUserId = ref(null);
+
+// Backup management state
+const backupSettings = ref({
+  filesystem_enabled: true,
+  filesystem_retention_days: 30,
+  google_drive_enabled: false,
+  google_drive_folder_id: null,
+  backup_schedule: 'daily',
+  last_backup_at: null,
+});
+const backups = ref([]);
+const loadingBackups = ref(false);
+const updatingBackupSettings = ref(false);
+const runningBackup = ref(false);
+const backupResult = ref(null);
+const googleDriveCredentials = ref('');
+const configuringGoogleDrive = ref(false);
+const testingGoogleDrive = ref(false);
+const googleDriveConfigured = ref(false);
 
 // Fetch current user ID
 onMounted(async () => {
@@ -477,5 +710,188 @@ const importRecords = async (event) => {
   } finally {
     importing.value = false;
   }
+};
+
+// Backup management functions
+onMounted(async () => {
+  await fetchBackupSettings();
+  await refreshBackupList();
+});
+
+const fetchBackupSettings = async () => {
+  try {
+    const response = await fetch('/api/admin/backups/settings', {
+      credentials: 'same-origin',
+    });
+
+    if (response.ok) {
+      backupSettings.value = await response.json();
+      googleDriveConfigured.value = !!backupSettings.value.google_drive_folder_id;
+    }
+  } catch (error) {
+    console.error('Failed to fetch backup settings:', error);
+  }
+};
+
+const updateBackupSettings = async () => {
+  updatingBackupSettings.value = true;
+  try {
+    const response = await fetch('/api/admin/backups/settings', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(backupSettings.value)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update backup settings');
+    }
+  } catch (error) {
+    console.error('Failed to update backup settings:', error);
+    alert('Failed to update backup settings. Please try again.');
+  } finally {
+    updatingBackupSettings.value = false;
+  }
+};
+
+const toggleFilesystemBackup = async () => {
+  backupSettings.value.filesystem_enabled = !backupSettings.value.filesystem_enabled;
+  await updateBackupSettings();
+};
+
+const toggleGoogleDriveBackup = async () => {
+  backupSettings.value.google_drive_enabled = !backupSettings.value.google_drive_enabled;
+  await updateBackupSettings();
+};
+
+const configureGoogleDrive = async () => {
+  configuringGoogleDrive.value = true;
+  try {
+    const response = await fetch('/api/admin/backups/google-drive/configure', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        credentials: googleDriveCredentials.value
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to configure Google Drive');
+    }
+
+    alert('Google Drive configured successfully!');
+    googleDriveConfigured.value = true;
+    googleDriveCredentials.value = '';
+    await fetchBackupSettings();
+  } catch (error) {
+    console.error('Failed to configure Google Drive:', error);
+    alert(error.message || 'Failed to configure Google Drive. Please check your credentials.');
+  } finally {
+    configuringGoogleDrive.value = false;
+  }
+};
+
+const testGoogleDrive = async () => {
+  testingGoogleDrive.value = true;
+  try {
+    const response = await fetch('/api/admin/backups/google-drive/test', {
+      credentials: 'same-origin',
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert(`Google Drive connection successful!\nConnected as: ${data.user.name} (${data.user.email})`);
+    } else {
+      alert(`Google Drive connection failed: ${data.error}`);
+    }
+  } catch (error) {
+    console.error('Failed to test Google Drive:', error);
+    alert('Failed to test Google Drive connection.');
+  } finally {
+    testingGoogleDrive.value = false;
+  }
+};
+
+const runManualBackup = async () => {
+  runningBackup.value = true;
+  backupResult.value = null;
+
+  try {
+    const response = await fetch('/api/admin/backups/run', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      credentials: 'same-origin',
+    });
+
+    const data = await response.json();
+
+    backupResult.value = {
+      success: data.results?.success || false,
+      message: data.message
+    };
+
+    if (data.results?.success) {
+      await refreshBackupList();
+      await fetchBackupSettings();
+    }
+  } catch (error) {
+    console.error('Failed to run backup:', error);
+    backupResult.value = {
+      success: false,
+      message: 'Failed to run backup. Please try again.'
+    };
+  } finally {
+    runningBackup.value = false;
+  }
+};
+
+const refreshBackupList = async () => {
+  loadingBackups.value = true;
+  try {
+    const response = await fetch('/api/admin/backups/list', {
+      credentials: 'same-origin',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      backups.value = data.backups || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch backups:', error);
+  } finally {
+    loadingBackups.value = false;
+  }
+};
+
+const downloadBackup = (filename) => {
+  window.location.href = `/api/admin/backups/download/${filename}`;
+};
+
+const formatBackupDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = now - date;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (hours < 1) return 'Just now';
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+  return date.toLocaleDateString();
 };
 </script>
