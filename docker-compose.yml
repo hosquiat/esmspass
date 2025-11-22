@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${DB_EXTERNAL_PORT:-5433}:5432"  # External port 5433 to avoid conflicts
     networks:
       - teamvault_network
     healthcheck:
